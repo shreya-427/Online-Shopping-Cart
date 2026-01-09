@@ -48,6 +48,8 @@ public class Cart {
     //clears cart
     public void clear(){
         cart.clear();
+        totItems = 0;
+        totPrice = 0;
     }
 
     //checks if cart is empty
