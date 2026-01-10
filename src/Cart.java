@@ -58,8 +58,12 @@ public class Cart {
     }
 
     //checks the size of the cart
-    public int size(){
+    public int totSize(){
         return totItems;
+    }
+
+    public void setSize(int c){
+        totItems = c;
     }
 
     //round to nearest hundreth place 
@@ -76,18 +80,23 @@ public class Cart {
     }
 
     //search for a specific item in the bag by name, and return slot # in cart
+        //returns index in cart
     public int findItemName(String name){
         int ind = -1;
         //traverse through cart, compare every itemName
         for(int i = 0; i < cart.size(); i++){
             //System.err.println("testing: " + cart.get(i).getName().indexOf(name));
-            if(cart.get(i).getName().indexOf(name) >= 0){
+            if(cart.get(i).getName().contains(name)){
                 ind = cart.get(i).getName().indexOf(name);
             }
         }
         //search by name
         return ind;
         
+    }
+
+    public boolean validQuant(int index, int quant){
+        return cart.get(index).getQuantity() >= quant;
     }
 
 

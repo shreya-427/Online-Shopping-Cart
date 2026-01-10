@@ -10,43 +10,80 @@ public class Main {
         //Scanner
         Scanner s = new Scanner(System.in);
 
-        //System.out.println("Welcome to our online grocerry store, here are your options:\n1. view store inventory\n2. add to cart\n3. remove from cart\n4. empty cart\n5. edit quantity of existing item\n6. check cart size\n7. checkout\n");
-
-        //1System.out.print("Which option would you like to pick? -1 if none ");
         int option = 0;
-
+        String o = "";
         while(option != -1){
             System.out.println("Welcome to our online grocerry store, here are your options:\n1. view store inventory\n2. add to cart\n3. remove from cart\n4. empty cart\n5. edit quantity of existing item\n6. check cart size\n7. checkout\n");
             System.out.print("\nWhich option would you like to pick? To exit type -1 ");
-            option = s.nextInt();
+            //if input is not an integer
+            /*hasNextInt() promts user input, then only peeks at the input to check if its an int but doesn't assign anything */
+            while(!s.hasNextInt()){
+                System.out.println("\nInvalid option, whole numbers only!");
+                System.out.println("Here are your options:\n1. view store inventory\n2. add to cart\n3. remove from cart\n4. empty cart\n5. edit quantity of existing item\n6. check cart size\n7. checkout\n");
+                System.out.print("Which option would you like to pick? To exit type -1 ");
+                s.next(); //this reads the input and removes it from scanner
+                //important b/c if not removed hasNextInt() will be checking the same input over again
+            }    
+            option = s.nextInt(); //nextInt reads the input on buffer, checks int, stores it in var, then removes from buffer
             //switch case for options
             switch(option){
                 case 1: //view store inventory
                     System.out.println("Inventory: ");
                     walmart.displayInventory();
+                    System.out.println("\n");
                     break;
                 case 2: //add to cart
                     System.out.println("Inventory: ");
                     walmart.displayInventory();
-                    int index = 0,quant = 0;
                     System.out.print("Enter the item number you would like to add: ");
-                    //int itemNumber = s.nextInt();
-                    //checks if input is an int
-                    if(s.hasNextInt()){
-                        index = s.nextInt();
-                        System.out.print("Enter the quantity: ");
-                        //checks if quant is also an int
-                        if(s.hasNextInt()){ 
-                            quant = s.nextInt();
-                            //make sure item number and quantity is valid
-                            if(index > walmart.getInventory().size()+1 || index < 1){
-                                System.err.println("Not a valid item number, try again");
-                                break;
-                            }else if (quant < 0 || quant > Integer.MAX_VALUE) {
-                                System.err.println("Not a valid quantity, try again");
-                                break;
-                            }else{
-                                //get price and name from the number
+                    
+                    //if invalid item # input - not int
+                    while(!s.hasNextInt()){
+                        System.err.println("Not a valid item number, try again");
+                        walmart.displayInventory();
+                        System.out.print("Enter the item number you would like to add: ");
+                        s.next();
+                    }
+                    int index = s.nextInt();
+
+                    //checking if index is between valid indexes - atp already int
+                    while((index > walmart.getInventory().size() || index < 1)) { 
+                        System.out.println("Not a valid item number, try again!");
+                        //walmart.displayInventory();
+                        System.out.print("Enter the item number you would like to add: ");
+                        //checking if new input is an int
+                        while(!s.hasNextInt()) {
+                            System.out.println("Whole numbers only, try again!");
+                            System.out.print("Enter the item number you would like to add: ");
+                            s.next();    
+                        }
+                        index = s.nextInt();//if int read,save, disgard
+                    }
+
+                    System.out.print("Enter the quantity: ");
+                    //checks if quant is also an int
+                    while(!s.hasNextInt()){
+                        System.err.println("Not a valid quantity, try again");
+                        s.next();
+                    }
+                    int quant = s.nextInt();
+
+                    //make sure quantity is valid
+
+                    while((quant < 0 || quant > Integer.MAX_VALUE)) { 
+                        System.err.println("Not a valid quantity, try again!");
+                        System.out.print("Enter the quanity: ");
+                        while(!s.hasNextInt()){ //if quant is not an int
+                            System.err.println("Whole numbers only & can't be too large, try again");
+                            System.out.print("Enter the quantity: ");
+                            s.next();
+                        }
+                         quant = s.nextInt();
+                    }
+                   
+                    
+                    //if valid quant and item
+                    //get price and name from the number
                                 String name = walmart.getInventory().get(index-1).getName();
                                 double price = walmart.getInventory().get(index-1).getPrice();
                                 //make an inventory Item
@@ -57,15 +94,6 @@ public class Main {
                                 cart.addItem(item, quant);
                                 System.out.println(quant + name + "added");
                                 break;
-                            } 
-                        }else{
-                            System.out.print("Invalid quantity!");
-                            break;
-                        }
-                    }else{
-                        System.out.println("Invalid Input!");
-                        break;
-                    }
                     
                 case 3: //remove from cart
                     System.out.println("Current cart:");
@@ -73,74 +101,117 @@ public class Main {
                         System.out.println(i.getName() + "- " + i.getPrice() + " x " + i.getQuantity());
 
                     }
-                    System.out.println("Enter the item number you would like to remove: ");
-                    if(s.next().contains(".")){
-                        System.err.println("Please only enter whole numbers");
+                    System.out.print("Enter the item number you would like to remove: ");
+                    //checks if item number is an int
+                    while(!s.hasNextInt()){
+                        System.err.println("Whole numbers only, try again!");
+                        System.out.print("Enter the item number you would like to remove: ");
+                        s.next();
                     }
-                    int ind = Integer.parseInt(s.next());
-                    //check ind beforehand
-                    //get price and name from the number
+                    
+                    int ind = s.nextInt();
 
-                    String name1 = walmart.getInventory().get(ind-1).getName();
-                    System.out.println("Enter the quantity to remove: ");
-                    if(s.next().contains(".")){
-                        System.err.println("Please only enter whole numbers");
+                    //getname from ind
+                    String nameInput = walmart.getInventory().get(ind-1).getName();
+                    //index in cart
+                    int exist = cart.findItemName(nameInput);
+
+                    //check if item number is in cart
+                    if(ind <= 0 || ind > walmart.getInventory().size()+1 || exist == -1){
+                        System.err.println("Item does not exist in cart");
+                        break;
+                    }
+
+                    System.out.print("Enter the quantity to remove: ");
+                    //check if quantity is int
+                    while(!s.hasNextInt()){
+                        System.err.println("Whole numbers only, try again!");
+                        System.out.print("Enter the quantity to remove: ");
+                        s.next();
                     }
                     int quanty = s.nextInt();
                 
-                //index of item in cart
-                    //check if its a valid index
-                    if(ind < 0 || ind > walmart.getInventory().size()+1){
-                        System.err.println("Item does not exist in cart");
+                //check if quant is valid
+                    boolean valQuan = cart.validQuant(exist,quanty);
+
+                    if(quanty <= 0 || quanty > Integer.MAX_VALUE) {
+                        System.err.println("Not a valid quantity, try again!");
                         break;
-                    }else if (quanty < 0 || quanty > Integer.MAX_VALUE || quanty > cart.getCart().get(ind-1).getQuantity()) {
-                        System.err.println("Not a valid quantity, try again");
+                    }else if (!valQuan) {
+                        System.err.println("Not a valid quantity, try again!\n");
                         break;
                     }else{
-                    int indd = cart.findItemName(name1);
-                        if(indd == -1){
-                            System.err.println("Item does not exist in cart");
-                            break;
-                        }else{
-                            //update quantity of the item
-                        int q = cart.getCart().get(indd).getQuantity() - quanty;
-                        cart.getCart().get(indd).setQuantity(q);
+                        //update quantity of the item
+                        int q = cart.getCart().get(exist).getQuantity() - quanty;
+                        cart.getCart().get(exist).setQuantity(q);
                         System.out.println("Item is removed");
-                        break;
+
+                        //update total cost
+                        int prevQ = cart.getCart().get(exist).getQuantity();
+                        double c = Math.abs(quanty - prevQ) * cart.getCart().get(exist).getPrice();
+                        double prevCost = cart.getTotalCost();
+                        if(quanty >= prevQ){
+                        //add to total cost
+                            cart.setTotalCost(prevCost + c);
+                        }else{
+                        //substract from total cost
+                            cart.setTotalCost(prevCost - c);
                         }
+                    //update total Num Items
+                        int difQ = Math.abs(quanty - prevQ);
+                        if(quanty >= prevQ){
+                        //add to total items
+                            cart.setSize(prevQ + difQ);
+                        }else{
+                        //substract from total items
+                            cart.setSize(prevQ - difQ);
+                        }
+                    //update quant
+                        cart.getCart().get(exist).setQuantity(quanty);
+                        System.out.println("Quantity of" + nameInput + "has been updated!");
+                        break;
                     }
                 case 4: //empty cart2
                     cart.getCart().clear();
+                    //update total items
+                    cart.setSize(0);
+                    //update total price
+                    cart.setTotalCost(0);
                     System.out.println("cart is cleared, "  + cart.getCart().size() + " items remain");
                     break;
                 case 5: //edit quantity of existing item
-                    System.out.println("Enter the item number you would like to edit the quantity of: ");
-                    if(s.next().contains(".")){
-                        System.err.println("Please only enter whole numbers");
+                    System.out.print("Enter the item number you would like to edit the quantity of: ");
+                    while(!s.hasNextInt()){
+                        System.err.println("Whole numbers only, try again!");
+                        System.out.print("Enter the item number you would like to edit the quantity of: ");
+                        s.next();
                     }
                     int ind1 = Integer.parseInt(s.next());
-                    System.out.println("Enter the quantity: ");
-                    if(s.next().contains(".")){
-                        System.err.println("Please only enter whole numbers");
+
+                    System.out.print("Enter the quantity: ");
+                    while(!s.hasNextInt()){
+                        System.err.println("Whole numbers only, try again!");
+                        System.out.print("Enter the quantity to be updated: ");
+                        s.next();
                     }
                     int quanty1 = s.nextInt();
 
                 //get price and name from the number
                     String name2 = walmart.getInventory().get(ind1-1).getName();
                 //index of item in cart
-                    int indd1 = cart.findItemName(name2);
+                    int indItem = cart.findItemName(name2);
 
                 //check if item exists in cart
-                    if(indd1 == -1 ||  indd1 < 0 || indd1 > walmart.getInventory().size()+1){
-                        System.err.println("item does not exist in cart");
+                    if(indItem == -1 ||  indItem < 0 || indItem > walmart.getInventory().size()+1){
+                        System.err.println("Item does not exist in cart");
                         break;
                     }else if (quanty1 < 0 || quanty1 > Integer.MAX_VALUE) {
-                        System.err.println("not a valid quantity, try again");
+                        System.err.println("Not a valid quantity, try again!");
                         break;
                     }else{
                     //update total price
-                        int prevQ = cart.getCart().get(indd1).getQuantity();
-                        double c = Math.abs(quanty1 - prevQ) * cart.getCart().get(indd1).getPrice();
+                        int prevQ = cart.getCart().get(indItem).getQuantity();
+                        double c = Math.abs(quanty1 - prevQ) * cart.getCart().get(indItem).getPrice();
                         double prevCost = cart.getTotalCost();
                         if(quanty1 >= prevQ){
                         //add to total cost
@@ -149,21 +220,30 @@ public class Main {
                         //substract from total cost
                             cart.setTotalCost(prevCost - c);
                         }
+                    //update total Num Items
+                        int difQ = Math.abs(quanty1 - prevQ);
+                        if(quanty1 >= prevQ){
+                        //add to total items
+                            cart.setSize(prevQ + difQ);
+                        }else{
+                        //substract from total items
+                            cart.setSize(prevQ - difQ);
+                        }
                     //update quant
-                        cart.getCart().get(indd1).setQuantity(quanty1);
-                        System.out.println("quantity of " + name2 + "has been updated");
+                        cart.getCart().get(indItem).setQuantity(quanty1);
+                        System.out.println("Quantity of" + name2 + "has been updated!");
                         break;
                     }
                 case 6: //check cart size
-                    System.out.println("Cart size: " + cart.size());
+                    System.out.println("Cart size: " + cart.totSize());
                     break;
                 case 7: //checkout
                 //display cart, items, quantities
                     cart.displayCart();
                 //get total items
-                    System.out.println("Total number of items: " + cart.size());
+                    System.out.println("Total number of items: " + cart.totSize());
                 //get total cost
-                        System.out.println("Total cost: $" + cart.getTotalCost());
+                        System.out.printf("%s%.2f%n","Total cost with tax: $", cart.getTotalCost());
                         System.out.println("Thank you for shopping with us!");
                     option = -1;
                     break;
@@ -171,6 +251,8 @@ public class Main {
                     System.err.println("Not an option, try again");
                     break;
             }
+            
+            
         }
         
     }

@@ -14,9 +14,14 @@ public class Store{
     }
 
     public void displayInventory(){
-        for(int i = 0; i < inventory.size(); i++){
-            System.out.println((i+1) + "." + inventory.get(i).getName() + "- " + inventory.get(i).getPrice());
+        int j = 35;
+        System.out.printf("%-23s%10s%10s%30s%n", "Item", "Price", "Item", "Price");
+        for(int i = 0; i < 35; i++){
+            System.out.printf("%d.%-25s %-10.2f %d.%-25s %.2f%n", (i+1) ,inventory.get(i).getName(),inventory.get(i).getPrice(),
+                                                   (j+1) ,inventory.get(j).getName(),inventory.get(j).getPrice());
+            j++;
         }
+
     }
 
     public ArrayList<InventoryItem> getInventory(){
