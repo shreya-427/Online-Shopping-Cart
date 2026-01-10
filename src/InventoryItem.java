@@ -1,4 +1,6 @@
-// Shreya
+/**
+ * @author Shreya
+ */
 public class InventoryItem {
     private String name;
     private double price;
