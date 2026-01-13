@@ -2,7 +2,7 @@
 import java.util.ArrayList;
 
 public class Cart {
-    private final double salesTax = 0.08;
+    private final double salesTax = 1.08;
     private Store s;
     private double totPrice;
     private int totItems;
@@ -33,15 +33,55 @@ public class Cart {
     }
 
     //removes an item or removes a specific quantity of an item
-    public String removeItem(InventoryItem a, int quant){
+    public void removeItem(InventoryItem a, int quant){
         //check to make sure quantity to remove is not more than what is there
-        if(a.getQuantity()-quant >= 0){
+        
+        if(a.getQuantity()-quant > 0){
             totItems -= quant;
             totPrice -= a.getPrice() * quant;
             a.setQuantity(a.getQuantity()-quant);
-            return quant + " items have been removed";
+            System.out.println(quant + " items have been removed");
+        }else if (a.getQuantity()-quant == 0) {
+            //remove item from cart
+            for(int i = 0; i < cart.size(); i++){
+                if(a.getName().equals(cart.get(i).getName())){
+                    cart.remove(i);
+                    System.out.println(quant + " items have been removed");
+                }
+            }
+            totItems -= quant;
+            totPrice -= a.getPrice() * quant;
+            a.setQuantity(a.getQuantity()-quant);
         }else{
-            return "cannot remove " + quant + " items as it exceeds the quantity that already exists";
+            System.out.println("Cannot remove " + quant + " items as it exceeds the quantity that already exists");
+        }
+    }
+
+    public void updateItem(InventoryItem a, int quant){
+        //check to make sure quantity to remove is not more than what is there
+        
+        if(quant == 0){
+            //remove item from cart
+            for(int i = 0; i < cart.size(); i++){
+                if(a.getName().equals(cart.get(i).getName())){
+                    cart.remove(i);
+                    System.out.println("Items have been removed");
+                }
+            }
+            totItems -= a.getQuantity()-quant;
+            totPrice -= a.getPrice() * (a.getQuantity()-quant);
+            a.setQuantity(quant);
+        }else if (a.getQuantity()-quant > 0) {
+            totItems -= a.getQuantity()-quant;
+            totPrice -= a.getPrice() * (a.getQuantity()-quant);
+            a.setQuantity(quant);
+            System.out.println(a.getName() + " has been updated!");
+        }else{
+            //greater than 0 then update, tot Items, tot Price, and quant
+            totItems += a.getQuantity()-quant;
+            totPrice += a.getPrice() * (a.getQuantity()-quant);
+            a.setQuantity(quant);
+            System.out.println(a.getName() + " has been updated!");
         }
     }
 
@@ -71,7 +111,7 @@ public class Cart {
         /* how to round
             multiply by 100, round, divide by 100
         */
-        double finAns = Math.round((((totPrice *salesTax) + totPrice) * 100));
+        double finAns = Math.round(totPrice*100);
         return finAns/100;
     }
 
