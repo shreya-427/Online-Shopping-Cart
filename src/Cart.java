@@ -127,7 +127,7 @@ public class Cart {
         for(int i = 0; i < cart.size(); i++){
             //System.err.println("testing: " + cart.get(i).getName().indexOf(name));
             if(cart.get(i).getName().contains(name)){
-                ind = cart.get(i).getName().indexOf(name);
+                ind = i;
             }
         }
         //search by name

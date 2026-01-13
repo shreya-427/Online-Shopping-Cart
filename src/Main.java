@@ -114,8 +114,15 @@ public class Main {
                     
                 case 3: //remove from cart
                     System.out.println("Current cart:");
+                    if(cart.totSize() == 0){
+                        System.err.println("Empty cart, nothing to remove!");
+                        break;
+                    }
+                    int in = 0;
+
                     for(InventoryItem i: cart.getCart()){
-                        System.out.println(i.getName() + "- " + i.getPrice() + " x " + i.getQuantity());
+                        in = cart.findItemName(i.getName());
+                        System.out.println((in+1) + "." + i.getName() + "- " + i.getPrice() + " x " + i.getQuantity());
                     }
 
                     int ind = 0;
@@ -123,7 +130,7 @@ public class Main {
                     int exist = 0;
 
                     while(true){
-                        System.out.print("Enter the item number you would like to remove: ");
+                        System.out.print("Enter the item number you would like to remove or -1 to exit: ");
                         String input = s.nextLine().trim();
                         int len = input.split("\\s+").length;
 
@@ -139,25 +146,32 @@ public class Main {
                             continue;
                         }
 
-                        if(ind <= 0 || ind >= walmart.getInventory().size() +1){
+                        if(ind == -1){
+                            break;
+                        }
+
+                        if(ind <= 0 || ind > cart.getCart().size()){
                             System.err.println("Item does not exist in cart");
                             continue;
                         }
 
                         //getname from ind
-                        nameInput = walmart.getInventory().get(ind-1).getName();
+                        nameInput = cart.getCart().get(ind-1).getName();
                         //index in cart
                         exist = cart.findItemName(nameInput);
 
                         //checks if its in cart
-                        if(ind <= 0 || ind > walmart.getInventory().size()+1 || exist == -1){
+                        if(exist == -1){
                             System.err.println("Item does not exist in cart");
                             continue;  
                         }
                         break;
                     }
                     int quanty = 0;
-                    boolean valQuan = false;
+
+                    if(ind == -1){
+                        break;
+                    }
 
                     while(true){
                         System.out.print("Enter the quantity to remove: ");
@@ -175,13 +189,6 @@ public class Main {
                             System.err.println("Whole numbers only, try again");
                             continue;
                         }
-
-                        //getname from ind
-                        nameInput = walmart.getInventory().get(ind-1).getName();
-                        //index in cart
-                        exist = cart.findItemName(nameInput);
-                        
-                        valQuan = cart.validQuant(exist,quanty);
 
                         //checks if its in cart
                         if(quanty <= 0 || quanty > Integer.MAX_VALUE){
@@ -207,8 +214,20 @@ public class Main {
                     int indItem;
                     String name2;
 
+                    System.out.println("Current cart:");
+                    if(cart.totSize() == 0){
+                        System.err.println("Empty cart, nothing to remove!");
+                        break;
+                    }
+
+                    for(InventoryItem i: cart.getCart()){
+                        in = cart.findItemName(i.getName()) +1;
+                        System.out.println(in + "." + i.getName() + "- " + i.getPrice() + " x " + i.getQuantity());
+                    }
+
+                    
                     while (true) { 
-                        System.out.print("Enter the item number you would like to edit the quantity of: ");
+                        System.out.print("Enter the item number you would like to edit the quantity of or -1 to exit: ");
                         String input = s.nextLine().trim();
                         int len = input.split("\\s+").length;
 
@@ -226,20 +245,28 @@ public class Main {
                             continue;
                         }
 
+                        if(ind1 == -1){
+                            break;
+                        }
+
                         //valid item number
-                        if(ind1 <= 0 || ind1 >= walmart.getInventory().size() + 1) {
+                        if(ind1 <= 0 || ind1 > cart.getCart().size()) {
                             System.err.println("Item does not exist in cart");
                             continue;
                         }
                         //get name from the index
-                        name2 = walmart.getInventory().get(ind1-1).getName();
+                        name2 = cart.getCart().get(ind1-1).getName();
                         //index of item in cart
                         indItem = cart.findItemName(name2);
 
-                        if(indItem == -1 ||  indItem < 0 || indItem > walmart.getInventory().size()+1){
+                        if(indItem == -1){
                             System.err.println("Item does not exist in cart");
                             continue;
                         }
+                        break;
+                    }
+
+                    if(ind1 == -1){
                         break;
                     }
                     
@@ -272,13 +299,17 @@ public class Main {
 
                     }
                     
-                    cart.updateItem(cart.getCart().get(indItem), quanty1);
+                    cart.updateItem(cart.getCart().get(ind1-1), quanty1);
                     break;
                     
                 case 6: //check cart size
                     System.out.println("Cart size: " + cart.totSize());
                     break;
                 case 7: //checkout
+                    if(cart.totSize() == 0){
+                        System.err.println("Can't check out with empty cart!");
+                        break;
+                    }
                 //display cart, items, quantities
                     cart.displayCart();
                 //get total items
